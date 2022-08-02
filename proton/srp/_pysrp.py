@@ -67,14 +67,8 @@ class User(object):
         )
 
         self.p = password.encode()
-        if bytes_a:
-            self.a = bytes_to_long(bytes_a)
-        else:
-            self.a = get_random_of_length(32)
-        if bytes_A:
-            self.A = bytes_to_long(bytes_A)
-        else:
-            self.A = pow(self.g, self.a, self.N)
+        self.a = bytes_to_long(bytes_a) if bytes_a else get_random_of_length(32)
+        self.A = bytes_to_long(bytes_A) if bytes_A else pow(self.g, self.a, self.N)
         self.v = None
         self.M = None
         self.K = None

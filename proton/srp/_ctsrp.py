@@ -21,7 +21,7 @@ import sys, os
 from .pmhash import pmhash
 from .util import PM_VERSION, SRP_LEN_BYTES, SALT_LEN_BYTES, hash_password
 
-dlls = list()
+dlls = []
 
 platform = sys.platform
 if platform == 'darwin':

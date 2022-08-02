@@ -23,7 +23,7 @@ def hash_password_3(hash_class, password, salt, modulus):
 
 
 def hash_password(hash_class, password, salt, modulus, version):
-    if version == 4 or version == 3:
+    if version in [4, 3]:
         return hash_password_3(hash_class, password, salt, modulus)
 
     raise ValueError('Unsupported auth version')

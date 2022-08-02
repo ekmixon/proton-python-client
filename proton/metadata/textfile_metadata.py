@@ -18,10 +18,7 @@ class TextfileMetdataHandler(MetadataBackend):
 
     def store_alternative_route(self, url):
         """Save connected time metadata."""
-        metadata = {}
-        metadata["last_api_call_time"] = str(
-            int(time.time())
-        )
+        metadata = {"last_api_call_time": str(int(time.time()))}
         metadata["url"] = url
 
         self.__write_metadata_to_file(metadata)
@@ -102,13 +99,9 @@ class TextfileMetdataHandler(MetadataBackend):
         """Check if metadata file exists."""
         self.logger.debug("Checking if metadata exists.")
 
-        found_metadata_file = False
-        if os.path.isfile(self.METADATA_FILEPATH):
-            found_metadata_file = True
-
+        found_metadata_file = bool(os.path.isfile(self.METADATA_FILEPATH))
         self.logger.debug(
-            "Metadata \"{}\"".format(
-                ("exists" if found_metadata_file else "does not exist")
-            )
+            f'Metadata \"{"exists" if found_metadata_file else "does not exist"}\"'
         )
+
         return found_metadata_file

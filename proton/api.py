@@ -91,7 +91,7 @@ class Session:
         s._session_data = dump["session_data"]
         if s.UID is not None:
             s.s.headers["x-pm-uid"] = s.UID
-            s.s.headers["Authorization"] = "Bearer " + s.AccessToken
+            s.s.headers["Authorization"] = f"Bearer {s.AccessToken}"
         return s
 
     def dump(self):
@@ -190,17 +190,14 @@ class Session:
         """
         if self.__allow_alternative_routing is None:
             msg = "Alternative routing has not been configured before making API requests. " \
-                "Please either enable or disable it before making any requests."
+                    "Please either enable or disable it before making any requests."
             self._logger.info(msg)
             raise RuntimeError(msg)
 
         fct = self.s.post
 
         if method is None:
-            if jsondata is None:
-                fct = self.s.get
-            else:
-                fct = self.s.post
+            fct = self.s.get if jsondata is None else self.s.post
         else:
             fct = {
                 "get": self.s.get,
@@ -211,7 +208,7 @@ class Session:
             }.get(method.lower())
 
         if fct is None:
-            raise ValueError("Unknown method: {}".format(method))
+            raise ValueError(f"Unknown method: {method}")
 
         _url = self.__api_url
         _verify = True
@@ -252,7 +249,7 @@ class Session:
             raise UnknownConnectionError(e)
 
         if exception_class and (not self.__allow_alternative_routing or _skip_alt_routing_for_api_check or self.__force_skip_alternative_routing): # noqa
-            self._logger.info("{}: {}".format(exception_class, exception_msg))
+            self._logger.info(f"{exception_class}: {exception_msg}")
             raise exception_class(exception_msg)
         elif (
             exception_class in [NewConnectionError, ConnectionTimeOutError, TLSPinningError]
@@ -305,20 +302,20 @@ class Session:
         response = None
 
         for route in alternative_routes:
-            _alt_url = "https://{}".format(route)
+            _alt_url = f"https://{route}"
             request_params["url"] = _alt_url
 
             if self.__tls_pinning_enabled:
                 self.s.mount(_alt_url, TLSPinningAdapter(ALT_HASH_DICT))
 
-            self._logger.info("Trying {}".format(_alt_url))
+            self._logger.info(f"Trying {_alt_url}")
             try:
                 response = self.__make_request(fct, **request_params)
             except Exception as e: # noqa
                 self._logger.exception(e)
                 continue
             else:
-                self._logger.info("Storing alternative route: {}".format(_alt_url))
+                self._logger.info(f"Storing alternative route: {_alt_url}")
                 self.__metadata.store_alternative_route(_alt_url)
                 break
 
@@ -429,7 +426,7 @@ class Session:
 
         if self.UID is not None:
             self.s.headers["x-pm-uid"] = self.UID
-            self.s.headers["Authorization"] = "Bearer " + self.AccessToken
+            self.s.headers["Authorization"] = f"Bearer {self.AccessToken}"
 
         return self.Scope
 
@@ -476,7 +473,7 @@ class Session:
         )
         self._session_data["AccessToken"] = refresh_response["AccessToken"]
         self._session_data["RefreshToken"] = refresh_response["RefreshToken"]
-        self.s.headers["Authorization"] = "Bearer " + self.AccessToken
+        self.s.headers["Authorization"] = f"Bearer {self.AccessToken}"
 
     def get_alternative_routes_from_dns(self, callback=None):
         """Get alternative routes to circumvent firewalls and API restrictions.
@@ -520,7 +517,7 @@ class Session:
                 )
                 dns_hosts_response = [dns_url for dns_url in dns_hosts_response if dns_url]
 
-            if len(dns_hosts_response) == 0:
+            if not dns_hosts_response:
                 continue
 
             for response in dns_hosts_response:
@@ -605,15 +602,13 @@ class Session:
         )
         routes = set()
         for route in r.answer:
-            routes = set([str(url).strip("\"") for url in route])
+            routes = {str(url).strip("\"") for url in route}
 
         return routes
 
     @property
     def captcha_url(self):
-        return "{}/core/v4/captcha?Token={}".format(
-            self.__api_url, self.__captcha_token
-        )
+        return f"{self.__api_url}/core/v4/captcha?Token={self.__captcha_token}"
 
     @property
     def enable_alternative_routing(self):

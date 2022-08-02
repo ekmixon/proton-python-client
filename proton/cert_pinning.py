@@ -108,8 +108,7 @@ class TLSPinningHTTPSConnectionPool(HTTPSConnectionPool):
         pubkey = crypto.dump_publickey(crypto.FILETYPE_ASN1, pubkey_obj)
 
         spki_hash = hashlib.sha256(pubkey).digest()
-        cert_hash = base64.b64encode(spki_hash).decode('utf-8')
-        return cert_hash
+        return base64.b64encode(spki_hash).decode('utf-8')
 
     def __is_hash_valid(self, cert_hash):
         """Validate the hash against a known list of hashes/pins.

@@ -72,15 +72,20 @@ class SRPTestCases:
                     self.assertEqual(
                         instance["Salt"],
                         base64.b64encode(salt).decode('utf8'),
-                        "Wrong salt while generating v, "
-                        + "instance: {}...".format(str(instance)[:30])
+                        (
+                            "Wrong salt while generating v, "
+                            + f"instance: {str(instance)[:30]}..."
+                        ),
                     )
+
 
                     self.assertEqual(
                         instance["Verifier"],
                         base64.b64encode(v).decode('utf8'),
-                        "Wrong verifier while generating v, "
-                        + "instance: {}...".format(str(instance)[:30])
+                        (
+                            "Wrong verifier while generating v, "
+                            + f"instance: {str(instance)[:30]}..."
+                        ),
                     )
 
         def test_generate_v(self):
@@ -99,15 +104,20 @@ class SRPTestCases:
                 self.assertEqual(
                     generated_salt,
                     computed_salt,
-                    "Wrong salt while generating v, "
-                    + "instance: {}...".format(str(instance)[:30])
+                    (
+                        "Wrong salt while generating v, "
+                        + f"instance: {str(instance)[:30]}..."
+                    ),
                 )
+
 
                 self.assertEqual(
                     generated_v,
                     computed_v,
-                    "Wrong verifier while generating v, "
-                    + "instance: {}...".format(str(instance)[:30])
+                    (
+                        "Wrong verifier while generating v, "
+                        + f"instance: {str(instance)[:30]}..."
+                    ),
                 )
 
         def test_srp(self):
@@ -141,34 +151,32 @@ class SRPTestCases:
 
                 self.assertIsNotNone(
                     client_proof,
-                    "SRP exchange failed, "
-                    "client_proof is none for instance: {}...".format(
-                        str(instance)[:30]
-                    )
+                    f"SRP exchange failed, client_proof is none for instance: {str(instance)[:30]}...",
                 )
+
 
                 self.assertEqual(
                     server.get_session_key(),
                     usr.get_session_key(),
-                    "Secrets do not match, instance: {}...".format(
-                        str(instance)[:30]
-                    )
+                    f"Secrets do not match, instance: {str(instance)[:30]}...",
                 )
+
 
                 self.assertTrue(
                     server.get_authenticated(),
-                    "Server is not correctly authenticated, "
-                    + "instance: {}...".format(
-                        str(instance)[:30]
-                    )
+                    (
+                        "Server is not correctly authenticated, "
+                        + f"instance: {str(instance)[:30]}..."
+                    ),
                 )
+
 
                 self.assertTrue(
                     usr.authenticated(),
-                    "User is not correctly authenticated, "
-                    + "instance: {}...".format(
-                        str(instance)[:30]
-                    )
+                    (
+                        "User is not correctly authenticated, "
+                        + f"instance: {str(instance)[:30]}..."
+                    ),
                 )
 
 
@@ -200,7 +208,7 @@ class TestModulus(unittest.TestCase):
                 self.assertEqual(
                     base64.b64decode(instance["Decoded"]),
                     session.verify_modulus(instance["SignedModulus"]),
-                    "Error verifying modulus in instance: " + str(instance)[:30] + "..."
+                    f"Error verifying modulus in instance: {str(instance)[:30]}...",
                 )
 
 
